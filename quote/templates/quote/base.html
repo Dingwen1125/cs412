@@ -1,0 +1,39 @@
+{% load static %}
+<html>
+    <head>
+        <title>Quote of the Day</title>
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+    </head>
+    <body>
+        
+        <h1 class = "title">H. P. Lovecraft Quote of the Day</h1>
+        
+
+        <hr>
+
+        <div class = "content">
+        <nav>
+            <li><a href="{% url 'quoteOf' %}">Quote of the Day</a></li>
+            <li><a href="{% url 'show_all' %}">Show All</a></li>
+            <li><a href="{% url 'about' %}">About</a></li>
+        </nav>
+
+        <div class="verticle_line"></div>
+
+        <div class="main">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <div class="verticle_line"></div>
+
+        </div>
+
+
+        <hr>
+        <footer>
+            Page created by Dingwen <br>
+            Generated at: {{current_time}}
+        </footer>
+    </body>
+</html>
