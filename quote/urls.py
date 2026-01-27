@@ -12,5 +12,5 @@ urlpatterns = [
     path(r'show_all', views.show_all, name="show_all"),
     path(r'about', views.about, name="about"),
 
-    """the static file path"""
+    #the static file path
     ] + static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
