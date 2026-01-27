@@ -22,5 +22,6 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hw/', include("hw.urls")),
-    path('quote/', include("quote.urls"))
+    path('quote/', include("quote.urls")),
+    path('formdata/', include("formdata.urls"))
 ] 
