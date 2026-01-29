@@ -8,7 +8,7 @@ import random
 
 # tow array conatning quotes and images for the randaom chose later
 quotes = ["The most merciful thing in the world is the inability of the human mind to correlate all its contents",
-            "That is not dead which can eternal lie,<br> And with strange aeons even death may die.",
+            "That is not dead which can eternal lie, And with strange aeons even death may die.",
             "Man is the measure of all things—only by his ignorance of other measures."]
 images = ["images/hp1.pic.jpg", "images/hp2.pic.jpg", "images/hp3.pic.jpg", "images/hp4.pic.jpg", "images/hp5.pic.jpg"]
 # Create your views here.
