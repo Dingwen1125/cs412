@@ -4,7 +4,8 @@
     <div>
         <h1>contack form</h1>
 
-        <form action="">
+        <form action="{% url 'submit' %}" method="post">
+            {% csrf_token %}
             Name: <input type="text" name = "name">
             Favorite color: <input type="text" name = "favorite_color">
             <input type="submit">

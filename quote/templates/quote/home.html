@@ -2,6 +2,6 @@
 {% extends 'quote/base.html' %}
 {% load static %}
     {% block content %}
-    <h3>We live on a placid island of ignorance in the midst of black seas of infinity.</h3>
-    <img src="{% static 'images/hp1.pic.jpg' %}" class = "picture">
+    <h3>{{chosen_quote}}</h3>
+    <img src="{% static chosen_image %}" class = "picture">
     {% endblock %}
