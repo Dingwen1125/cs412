@@ -1,0 +1,22 @@
+<!-- haome.html; Dingwen Yang; laoba@bu.edu; 2/3/2026; the home page of app; it includes some basic information of
+the restaurant and one picture of it-->
+
+{% extends 'restaurant/base.html' %}
+{% load static %}
+    {% block content %}
+    <h1 class = "begin">Welcome to McDonald's!</h1>
+    <h4>Location: 540 Commonwealth Ave, Boston, Ma</h4>
+    <img src = "{% static 'images/mc.pic.jpg' %}" class = "picture">
+    <table class = "mc-table">
+        <tr class = "mc-table-head">
+            <th>Workdays</th>
+            <th>Saturaday</th>
+            <th>Sunday</th>
+        </tr>
+        <tr>
+            <td>10am to 8pm</td>
+            <td>10am to 9pm</td>
+            <td>11am to 9pm</td>
+        </tr>
+    </table>
+    {% endblock %}

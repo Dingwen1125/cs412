@@ -1,0 +1,39 @@
+<!-- base.html; Dingwen Yang; laoba@bu.edu; 2/3/2026; the basic structure of the app; it contains
+the title, the nav bar and the footer -->
+{% load static %}
+<html>
+    <head>
+        <title>restaurant</title>
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+    </head>
+    <body>
+        
+        <h2 class = "title">McDonald's</h2>
+
+        <hr>
+
+        <div class = "content">
+        <nav>
+            <li><a href="{% url 'restaurant:home' %}">Main page</a></li>
+            <li><a href="{% url 'restaurant:order' %}">Order page</a></li>
+        </nav>
+
+        <div class="verticle_line"></div>
+
+        <div class="main">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <div class="verticle_line"></div>
+
+        </div>
+
+
+        <hr>
+        <footer>
+            Page created by Dingwen <br>
+            Generated at: {{current_time}}
+        </footer>
+    </body>
+</html>

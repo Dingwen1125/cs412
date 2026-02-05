@@ -1,0 +1,34 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+    {% block content %}
+    <form action="{% url 'restaurant:submit' %}" method="post">
+    {% csrf_token %}
+
+    <h3 class="order_title">select your item:</h3>
+    {% for food in all_food %}
+        {% if food.name != dailySpecial.name %}
+        <label>
+        <input type="checkbox" name="chosen_food" value="{{ food.name }}">
+        {{ food.name }} (${{ food.price }})
+        </label><br>
+        {% endif %}
+    {% endfor %}
+
+    <h3 class="order_title">Today's special:</h3>
+    <label>
+        <input type="checkbox" name="special" value="{{ dailySpecial.name }}">
+        {{ dailySpecial.name }} (${{ dailySpecial.price }})
+    </label><br>
+
+    <h3 class="order_title">Special request:</h3>
+    <textarea name="requirement" rows="4" cols="50"></textarea>
+
+    <h3 class="order_title">Customer Information:</h3>
+    Name: <input type="text" name="name"><br>
+    Phone: <input type="text" name="phone"><br>
+    Email: <input type="text" name="email"><br><br>
+
+    <input type="submit" value="submit">
+    </form>
+
+    {% endblock %}

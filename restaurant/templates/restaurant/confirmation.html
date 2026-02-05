@@ -1,0 +1,33 @@
+{% extends 'restaurant/base.html' %}
+{% load static %}
+{% block content %}
+    <h1 class = "begin">Confirmation</h1>
+    <h4 class = "confirm_content">Thank you for your order!</h4>
+    <h3 class="order_title">Customer Information:</h3>
+    <ul class = "confirm_content">
+    <p><strong>Name:</strong> {{ name }}</p>
+    <p><strong>Phone:</strong> {{ phone }}</p>
+    <p><strong>Email:</strong> {{ email }}</p>
+    </ul>
+    <h3 class="order_title">Ordered Items:</h3>
+    <ul class = "confirm_content">
+    {% for item in chosen %}
+        <li>{{ item }}</li>
+    {% endfor %}
+    {% if special %}
+    <p>{{ special }}</p>
+    {% endif %}
+    </ul>
+
+    <h3 class="order_title">Special Request:</h3>
+    <ul class = "confirm_content">
+    {% if requirement %}
+    <p>{{ requirement }}</p>
+    {% else %}
+    <p>No special requests</p>
+{% endif %}
+    </ul>
+
+<h3 class="order_title">Total Price:</h3>
+<p><strong>${{ total }}</strong></p>
+{% endblock %}

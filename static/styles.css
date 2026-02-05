@@ -1,6 +1,6 @@
 body {
     background-color: #fff;
-    color: slategray;
+    color: black;
     font-family: arial;
 }
 
@@ -40,8 +40,11 @@ hr{
 }
 
 .picture{
-    width: 60%; 
-    margin-left: 10vw;
+    display: block; 
+    width: 80%; 
+    max-width: 500px;
+    height: auto;
+    margin: 0 auto 40px; 
 }
 
 nav {
@@ -81,3 +84,31 @@ footer {
     font-size: 14px;
 }
 
+.mc-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.mc-table th:not(:first-child), .mc-table td:not(:first-child) {
+    padding: 10px 45px;
+    font-size: 1.1rem;
+    border-left: 1px solid grey
+}
+
+.mc-table tr:not(:last-child) {
+    border-bottom: 1px solid grey;
+}
+
+.order_title{
+    margin-bottom:0ch;
+    margin-top: 5ch;
+}
+
+.confirm_content{
+    color: black;
+}
+
+.begin{
+    text-align: center;
+}
