@@ -1,3 +1,7 @@
+# File: models.py
+# Author: Dingwen Yang(laoba@bu.edu), 2/12/2026
+# Description: Define the MiniInsta profile data model.
+
 from django.db import models
 
 # Create your models here.

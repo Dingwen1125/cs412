@@ -1,0 +1,18 @@
+{% extends 'mini_insta/base.html' %}
+{% block content %}
+    <main class="profile-detail-container">
+        <article class="profile-detail-card">
+            {% if profile.profile_image_url %}
+                <img class="profile-detail-image" src="{{profile.profile_image_url}}" alt="{{profile.display_name}}">
+            {% endif %}
+
+            <div class="profile-detail-content">
+                <h2 class="profile-detail-name">{{profile.display_name}}</h2>
+                <h3 class="profile-detail-username">@{{profile.username}}</h3>
+                <p class="profile-detail-stats">Followers: TBD | Follows: TBD | Posts: TBD</p>
+                <p class="profile-detail-bio">{{profile.bio_text}}</p>
+                <p class="profile-detail-join">Joined: {{profile.join_date}}</p>
+            </div>
+        </article>
+    </main>
+{% endblock %}
