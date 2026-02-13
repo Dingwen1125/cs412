@@ -1,7 +1,13 @@
+<!--
+    File: show_all_profiles.html
+    Author: Dingwen Yang (laoba@bu.edu), 2/12/2026
+    Description: Show all MiniInsta profiles in a grid view.
+-->
 {% extends 'mini_insta/base.html' %}
 {% block content %}
 <main class="grid-container">
     {% for profile in profiles %}
+    <!-- show all profiles items with a loop -->
     <article>
     <div>
         <h2>{{profile.display_name}}</h2>
