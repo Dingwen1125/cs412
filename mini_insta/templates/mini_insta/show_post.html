@@ -1,0 +1,33 @@
+<!--
+    File: show_post.html
+    Author: Dingwen Yang (laoba@bu.edu), 2/20/2026
+    Description: Show one MiniInsta post with caption, timestamp, and all photos.
+-->
+{% extends 'mini_insta/base.html' %}
+{% block content %}
+    <main class="profile-detail-container">
+        <article class="profile-detail-card">
+            <div class="profile-detail-content">
+                <h2>Post Detail</h2>
+                <p><strong>Author:</strong> @{{post.profile.username}}</p>
+                <p><strong>Posted:</strong> {{post.timestamp}}</p>
+                {% if post.caption %}
+                    <p class="profile-detail-bio">{{post.caption}}</p>
+                {% else %}
+                    <p class="profile-detail-bio">(No caption)</p>
+                {% endif %}
+            </div>
+        </article>
+
+        <section>
+            <h2>Photos</h2>
+            <div class="profile-detail-content">
+                {% for photo in post.get_all_photos %}
+                    <img class="profile-detail-image" src="{{photo.image_url|default:default_photo_url}}" alt="post photo">
+                {% empty %}
+                    <img class="profile-detail-image" src="{{default_photo_url}}" alt="default post photo">
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+{% endblock %}

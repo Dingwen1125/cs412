@@ -1,0 +1,35 @@
+<!--
+    File: create_post_form.html
+    Author: Dingwen Yang (laoba@bu.edu), 2/20/2026
+    Description: Render a form to create a post and optional photo URL.
+-->
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+<main class="profile-detail-container">
+    <article class="profile-detail-card">
+        <div class="profile-detail-content">
+            <h2>Create Post</h2>
+
+            <form method="POST" action="{% url 'create_post' profile.pk %}">
+                {% csrf_token %}
+
+                <div>
+                    <label for="{{ form.caption.id_for_label }}">Caption:</label>
+                    {{ form.caption }}
+                </div>
+
+                <div>
+                    <label for="id_image_url">Image URL:</label>
+                    <input type="url" name="image_url" id="id_image_url">
+                </div>
+
+                <div>
+                    <input type="submit" value="Submit">
+                    <a href="{% url 'show_profile' profile.pk %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </article>
+</main>
+{% endblock %}

@@ -19,5 +19,33 @@
                 <p class="profile-detail-join">Joined: {{profile.join_date}}</p>
             </div>
         </article>
+
+        <section>
+            <h2>Posts</h2>
+            <p><a href="{% url 'create_post' profile.pk %}">Create New Post</a></p>
+            {% for post in profile.get_all_posts %}
+                <article class="profile-detail-card">
+                    <div class="profile-detail-content">
+                        <p><strong>Posted:</strong> {{post.timestamp}}</p>
+                        {% if post.caption %}
+                            <p class="profile-detail-bio">{{post.caption}}</p>
+                        {% endif %}
+                    </div>
+                    <div class="profile-detail-content">
+                        <a href="{% url 'show_post' post.pk %}">
+                            {% with first_photo=post.get_all_photos.first %}
+                            {% if first_photo %}
+                                <img class="profile-detail-image" src="{{first_photo.image_url|default:default_photo_url}}" alt="post photo">
+                            {% else %}
+                                <img class="profile-detail-image" src="{{default_photo_url}}" alt="default post photo">
+                            {% endif %}
+                            {% endwith %}
+                        </a>
+                    </div>
+                </article>
+            {% empty %}
+                <p>No posts yet.</p>
+            {% endfor %}
+        </section>
     </main>
 {% endblock %}
