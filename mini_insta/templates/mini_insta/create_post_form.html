@@ -1,7 +1,7 @@
 <!--
     File: create_post_form.html
     Author: Dingwen Yang (laoba@bu.edu), 2/20/2026
-    Description: Render a form to create a post and optional photo URL.
+    Description: Render a form to create a post and upload one or more photos.
 -->
 {% extends 'mini_insta/base.html' %}
 
@@ -11,7 +11,7 @@
         <div class="profile-detail-content">
             <h2>Create Post</h2>
 
-            <form method="POST" action="{% url 'create_post' profile.pk %}">
+            <form method="POST" action="{% url 'create_post' profile.pk %}" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <div>
@@ -20,8 +20,8 @@
                 </div>
 
                 <div>
-                    <label for="id_image_url">Image URL:</label>
-                    <input type="url" name="image_url" id="id_image_url">
+                    <label for="id_image_files">Upload Image File:</label>
+                    <input type="file" name="image_files" id="id_image_files" multiple>
                 </div>
 
                 <div>

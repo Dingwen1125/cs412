@@ -1,0 +1,24 @@
+<!--
+    File: search.html
+    Description: Render search form for profiles and posts.
+-->
+{% extends 'mini_insta/base.html' %}
+{% block content %}
+<main class="profile-detail-container">
+    <article class="profile-detail-card">
+        <div class="profile-detail-content">
+            <h2>Search</h2>
+            <form method="GET" action="{% url 'search' profile.pk %}">
+                <div>
+                    <label for="id_query">Search text:</label>
+                    <textarea id="id_query" name="query" rows="3" cols="50" required></textarea>
+                </div>
+                <div>
+                    <input type="submit" value="Search">
+                </div>
+            </form>
+            <p><a href="{% url 'show_feed' profile.pk %}">Back to Feed</a></p>
+        </div>
+    </article>
+</main>
+{% endblock %}

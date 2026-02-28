@@ -1,0 +1,57 @@
+<!--
+    File: search_results.html
+    Description: Show profile and post search results.
+-->
+{% extends 'mini_insta/base.html' %}
+{% block content %}
+<main class="profile-detail-container">
+    <section>
+        <h2>Search Results</h2>
+        <p>Query: "{{ query }}"</p>
+        <p><a href="{% url 'search' profile.pk %}">New Search</a></p>
+    </section>
+
+    <section>
+        <h3>Matching Profiles</h3>
+        {% for result_profile in profile_results %}
+            <article class="profile-detail-card">
+                <div class="profile-detail-content">
+                    <p><a href="{% url 'show_profile' result_profile.pk %}">{{ result_profile.display_name }}</a></p>
+                    <p>@{{ result_profile.username }}</p>
+                </div>
+            </article>
+        {% empty %}
+            <p>No matching profiles.</p>
+        {% endfor %}
+    </section>
+
+    <section>
+        <h3>Matching Posts</h3>
+        {% for post in post_results %}
+            <article class="profile-detail-card">
+                <div class="profile-detail-content">
+                    <p>
+                        <a href="{% url 'show_profile' post.profile.pk %}">{{ post.profile.display_name }}</a>
+                        (@{{ post.profile.username }})
+                    </p>
+                    <p><strong>Posted:</strong> {{ post.timestamp|date:"Y-m-d H:i" }}</p>
+                    {% with first_photo=post.get_all_photos.first %}
+                        {% if first_photo %}
+                            <a href="{% url 'show_post' post.pk %}">
+                                <img class="profile-detail-image" src="{{ first_photo.get_image_url }}" alt="post photo">
+                            </a>
+                        {% else %}
+                            <a href="{% url 'show_post' post.pk %}">
+                                <img class="profile-detail-image" src="{{ default_photo_url }}" alt="default post photo">
+                            </a>
+                        {% endif %}
+                    {% endwith %}
+                    <p>{{ post.caption|default:"(No caption)" }}</p>
+                </div>
+            </article>
+        {% empty %}
+            <p>No matching posts.</p>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,43 @@
+<!--
+    File: update_profile_form.html
+    Author: Dingwen Yang (laoba@bu.edu)
+    Description: Render a form to update a MiniInsta profile.
+-->
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+<main class="profile-detail-container">
+    <article class="profile-detail-card">
+        <div class="profile-detail-content">
+            <h2>Update Profile</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div>
+                    <label for="{{ form.display_name.id_for_label }}">Display Name:</label>
+                    {{ form.display_name }}
+                </div>
+
+                <div>
+                    <label for="{{ form.profile_image_url.id_for_label }}">Profile Image URL:</label>
+                    {{ form.profile_image_url }}
+                </div>
+
+                <div>
+                    <label for="{{ form.bio_text.id_for_label }}">Bio:</label>
+                    {{ form.bio_text }}
+                </div>
+
+                <div>
+                    <input type="submit" value="Update">
+                </div>
+            </form>
+
+            <form method="GET" action="{% url 'show_profile' object.pk %}">
+                <input type="submit" value="Cancel">
+            </form>
+        </div>
+    </article>
+</main>
+{% endblock %}

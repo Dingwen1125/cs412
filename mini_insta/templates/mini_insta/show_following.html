@@ -1,0 +1,27 @@
+<!--
+    File: show_following.html
+    Author: Dingwen Yang (laoba@bu.edu)
+    Description: Show all profiles followed by one MiniInsta profile.
+-->
+{% extends 'mini_insta/base.html' %}
+{% block content %}
+<main class="profile-detail-container">
+    <article class="profile-detail-card">
+        <div class="profile-detail-content">
+            <h2>@{{ profile.username }} is following</h2>
+            <p><a href="{% url 'show_profile' profile.pk %}">Back to Profile</a></p>
+        </div>
+    </article>
+
+    {% for following in profile.get_following %}
+        <article class="profile-detail-card">
+            <div class="profile-detail-content">
+                <p><a href="{% url 'show_profile' following.pk %}">{{ following.display_name }}</a></p>
+                <p>@{{ following.username }}</p>
+            </div>
+        </article>
+    {% empty %}
+        <p>Not following anyone yet.</p>
+    {% endfor %}
+</main>
+{% endblock %}

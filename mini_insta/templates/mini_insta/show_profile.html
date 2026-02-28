@@ -14,9 +14,18 @@
             <div class="profile-detail-content">
                 <h2 class="profile-detail-name">{{profile.display_name}}</h2>
                 <h3 class="profile-detail-username">@{{profile.username}}</h3>
-                <p class="profile-detail-stats">Followers: TBD | Follows: TBD | Posts: TBD</p>
+                <p class="profile-detail-stats">
+                    Followers:
+                    <a href="{% url 'show_followers' profile.pk %}">{{ profile.get_num_followers }}</a>
+                    |
+                    Following:
+                    <a href="{% url 'show_following' profile.pk %}">{{ profile.get_num_following }}</a>
+                    |
+                    Posts: {{ profile.get_all_posts|length }}
+                </p>
                 <p class="profile-detail-bio">{{profile.bio_text}}</p>
                 <p class="profile-detail-join">Joined: {{profile.join_date}}</p>
+                <p><a href="{% url 'update_profile' profile.pk %}">Update Profile</a></p>
             </div>
         </article>
 
@@ -35,7 +44,7 @@
                         <a href="{% url 'show_post' post.pk %}">
                             {% with first_photo=post.get_all_photos.first %}
                             {% if first_photo %}
-                                <img class="profile-detail-image" src="{{first_photo.image_url|default:default_photo_url}}" alt="post photo">
+                                <img class="profile-detail-image" src="{{first_photo.get_image_url}}" alt="post photo">
                             {% else %}
                                 <img class="profile-detail-image" src="{{default_photo_url}}" alt="default post photo">
                             {% endif %}

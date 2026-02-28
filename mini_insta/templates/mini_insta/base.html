@@ -20,10 +20,28 @@
         {% endblock %}
     </body>
 
-    <footer>
-        home page:
-        <a href="{% url 'show_all' %}">
-            <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="not select">
-        </a>
+    <footer style="display:flex; justify-content:space-between; align-items:center;">
+        {% if profile %}
+            <a href="{% url 'show_feed' profile.pk %}">
+                <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="feed">
+            </a>
+            <a href="{% url 'search' profile.pk %}">search</a>
+        {% elif post %}
+            <a href="{% url 'show_feed' post.profile.pk %}">
+                <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="feed">
+            </a>
+            <a href="{% url 'search' post.profile.pk %}">search</a>
+        {% else %}
+            <a href="{% url 'show_all' %}">
+                <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="feed">
+            </a>
+            {% with first_profile=profiles.0 %}
+                {% if first_profile %}
+                    <a href="{% url 'search' first_profile.pk %}">search</a>
+                {% else %}
+                    <span></span>
+                {% endif %}
+            {% endwith %}
+        {% endif %}
     </footer>
 </html>

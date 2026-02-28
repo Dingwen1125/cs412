@@ -11,11 +11,14 @@
                 <h2>Post Detail</h2>
                 <p><strong>Author:</strong> @{{post.profile.username}}</p>
                 <p><strong>Posted:</strong> {{post.timestamp}}</p>
+                <p><strong>Likes:</strong> {{ post.get_likes|length }}</p>
                 {% if post.caption %}
                     <p class="profile-detail-bio">{{post.caption}}</p>
                 {% else %}
                     <p class="profile-detail-bio">(No caption)</p>
                 {% endif %}
+                <p><a href="{% url 'update_post' post.pk %}">update</a></p>
+                <p><a href="{% url 'delete_post' post.pk %}">delete</a></p>
             </div>
         </article>
 
@@ -23,11 +26,25 @@
             <h2>Photos</h2>
             <div class="profile-detail-content">
                 {% for photo in post.get_all_photos %}
-                    <img class="profile-detail-image" src="{{photo.image_url|default:default_photo_url}}" alt="post photo">
+                    <img class="profile-detail-image" src="{{photo.get_image_url|default:default_photo_url}}" alt="post photo">
                 {% empty %}
                     <img class="profile-detail-image" src="{{default_photo_url}}" alt="default post photo">
                 {% endfor %}
             </div>
+        </section>
+
+        <section>
+            <h2>Comments</h2>
+            {% for comment in post.get_all_comments %}
+                <article class="profile-detail-card">
+                    <div class="profile-detail-content">
+                        <p><strong>@{{ comment.profile.username }}</strong> <em>{{ comment.timestamp|date:"Y-m-d H:i" }}</em></p>
+                        <p>{{ comment.text }}</p>
+                    </div>
+                </article>
+            {% empty %}
+                <p>No comments yet.</p>
+            {% endfor %}
         </section>
     </main>
 {% endblock %}

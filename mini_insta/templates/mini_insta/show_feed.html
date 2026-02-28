@@ -1,0 +1,63 @@
+<!--
+    File: show_feed.html
+    Author: Dingwen Yang (laoba@bu.edu)
+    Description: Show the personalized post feed for one MiniInsta profile.
+-->
+{% extends 'mini_insta/base.html' %}
+{% block content %}
+<main class="profile-detail-container">
+    <section>
+        <h2>@{{ profile.username }}'s Feed</h2>
+        <p><a href="{% url 'show_profile' profile.pk %}">Back to Profile</a></p>
+        <p><a href="{% url 'search' profile.pk %}">Search</a></p>
+    </section>
+
+    {% for post in posts %}
+        <article class="profile-detail-card">
+            {% if post.profile.profile_image_url %}
+                <img class="profile-detail-image" src="{{ post.profile.profile_image_url }}" alt="{{ post.profile.display_name }}">
+            {% endif %}
+
+            <div class="profile-detail-content">
+                <p>
+                    <strong>
+                        <a href="{% url 'show_profile' post.profile.pk %}">{{ post.profile.display_name }}</a>
+                    </strong>
+                    (@{{ post.profile.username }})
+                </p>
+                <p><strong>Posted:</strong> {{ post.timestamp|date:"Y-m-d H:i" }}</p>
+
+                {% with first_photo=post.get_all_photos.first %}
+                    {% if first_photo %}
+                        <a href="{% url 'show_post' post.pk %}">
+                            <img class="profile-detail-image" src="{{ first_photo.get_image_url }}" alt="post photo">
+                        </a>
+                    {% else %}
+                        <a href="{% url 'show_post' post.pk %}">
+                            <img class="profile-detail-image" src="{{ default_photo_url }}" alt="default post photo">
+                        </a>
+                    {% endif %}
+                {% endwith %}
+
+                {% if post.caption %}
+                    <p class="profile-detail-bio">{{ post.caption }}</p>
+                {% else %}
+                    <p class="profile-detail-bio">(No caption)</p>
+                {% endif %}
+
+                <p><strong>Likes:</strong> {{ post.get_likes|length }}</p>
+                <div>
+                    <strong>Comments:</strong>
+                    {% for comment in post.get_all_comments %}
+                        <p>@{{ comment.profile.username }}: {{ comment.text }}</p>
+                    {% empty %}
+                        <p>No comments yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+    {% empty %}
+        <p>No posts in your feed yet.</p>
+    {% endfor %}
+</main>
+{% endblock %}
