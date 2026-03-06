@@ -8,14 +8,14 @@
 <main class="profile-detail-container">
     <section>
         <h2>@{{ profile.username }}'s Feed</h2>
-        <p><a href="{% url 'show_profile' profile.pk %}">Back to Profile</a></p>
-        <p><a href="{% url 'search' profile.pk %}">Search</a></p>
+        <p><a href="{% url 'show_my_profile' %}">Back to Profile</a></p>
+        <p><a href="{% url 'search' %}">Search</a></p>
     </section>
 
     {% for post in posts %}
         <article class="profile-detail-card">
-            {% if post.profile.profile_image_url %}
-                <img class="profile-detail-image" src="{{ post.profile.profile_image_url }}" alt="{{ post.profile.display_name }}">
+            {% if post.profile.get_profile_image_url %}
+                <img class="profile-detail-image" src="{{ post.profile.get_profile_image_url }}" alt="{{ post.profile.display_name }}">
             {% endif %}
 
             <div class="profile-detail-content">

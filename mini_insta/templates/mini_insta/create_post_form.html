@@ -11,7 +11,7 @@
         <div class="profile-detail-content">
             <h2>Create Post</h2>
 
-            <form method="POST" action="{% url 'create_post' profile.pk %}" enctype="multipart/form-data">
+            <form method="POST" action="{% url 'create_post' %}" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <div>
@@ -26,7 +26,7 @@
 
                 <div>
                     <input type="submit" value="Submit">
-                    <a href="{% url 'show_profile' profile.pk %}">Cancel</a>
+                    <a href="{% url 'show_my_profile' %}">Cancel</a>
                 </div>
             </form>
         </div>

@@ -13,7 +13,23 @@
 
     <body>
         <head>
-            <h1>MiniInsta:</h1>
+            <a href="{% url 'show_all' %}">
+                <h1>MiniInsta:</h1>
+            </a>
+            <nav>
+                {% if user.is_authenticated %}
+                    Logged in as: {{ user.username }}
+                    <a href="{% url 'show_my_profile' %}">My Profile</a>
+                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'show_all' %}">All Profiles</a>
+                    <a href="{% url 'create_profile' %}">Create Account</a>
+                    <a href="{% url 'login' %}?next={{ request.path }}">Log in</a>
+                {% endif %}
+            </nav>
         </head>
 
         {% block content %}
@@ -22,26 +38,40 @@
 
     <footer style="display:flex; justify-content:space-between; align-items:center;">
         {% if profile %}
-            <a href="{% url 'show_feed' profile.pk %}">
-                <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="feed">
-            </a>
-            <a href="{% url 'search' profile.pk %}">search</a>
+            {% if user.is_authenticated and user == profile.user %}
+                <a href="{% url 'show_feed' %}">
+                    <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="feed">
+                </a>
+            {% else %}
+                <a href="{% url 'show_all' %}">
+                    <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="home">
+                </a>
+            {% endif %}
+            {% if user.is_authenticated %}
+                <a href="{% url 'search' %}">search</a>
+            {% else %}
+                <span></span>
+            {% endif %}
         {% elif post %}
-            <a href="{% url 'show_feed' post.profile.pk %}">
-                <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="feed">
-            </a>
-            <a href="{% url 'search' post.profile.pk %}">search</a>
+            {% if user.is_authenticated and user == post.profile.user %}
+                <a href="{% url 'show_feed' %}">
+                    <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="feed">
+                </a>
+            {% else %}
+                <a href="{% url 'show_all' %}">
+                    <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="home">
+                </a>
+            {% endif %}
+            {% if user.is_authenticated %}
+                <a href="{% url 'search' %}">search</a>
+            {% else %}
+                <span></span>
+            {% endif %}
         {% else %}
             <a href="{% url 'show_all' %}">
                 <img class="footer-home-icon" src="{% static 'images/home.pic.jpg' %}" alt="feed">
             </a>
-            {% with first_profile=profiles.0 %}
-                {% if first_profile %}
-                    <a href="{% url 'search' first_profile.pk %}">search</a>
-                {% else %}
-                    <span></span>
-                {% endif %}
-            {% endwith %}
+            <span></span>
         {% endif %}
     </footer>
 </html>

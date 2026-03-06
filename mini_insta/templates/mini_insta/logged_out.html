@@ -1,0 +1,14 @@
+{% extends 'mini_insta/base.html' %}
+
+{% block content %}
+<main class="profile-detail-container">
+    <article class="profile-detail-card">
+        <div class="profile-detail-content">
+            <h2>Logged Out</h2>
+            <p>You have been logged out successfully.</p>
+            <p><a href="{% url 'login' %}">Log in again</a></p>
+            <p><a href="{% url 'show_all' %}">Back to all profiles</a></p>
+        </div>
+    </article>
+</main>
+{% endblock %}

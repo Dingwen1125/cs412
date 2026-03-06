@@ -7,8 +7,8 @@
 {% block content %}
     <main class="profile-detail-container">
         <article class="profile-detail-card">
-            {% if profile.profile_image_url %}
-                <img class="profile-detail-image" src="{{profile.profile_image_url}}" alt="{{profile.display_name}}">
+            {% if profile.get_profile_image_url %}
+                <img class="profile-detail-image" src="{{ profile.get_profile_image_url }}" alt="{{profile.display_name}}">
             {% endif %}
 
             <div class="profile-detail-content">
@@ -25,13 +25,32 @@
                 </p>
                 <p class="profile-detail-bio">{{profile.bio_text}}</p>
                 <p class="profile-detail-join">Joined: {{profile.join_date}}</p>
-                <p><a href="{% url 'update_profile' profile.pk %}">Update Profile</a></p>
+                {% if user.is_authenticated and can_follow %}
+                    {% if is_following %}
+                        <form method="post" action="{% url 'delete_follow_profile' profile.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit">已关注</button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'follow_profile' profile.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit">Follow</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+                {% if user.is_authenticated and user == profile.user %}
+                    <p><a href="{% url 'update_profile' %}">Update Profile</a></p>
+                {% endif %}
             </div>
         </article>
 
         <section>
             <h2>Posts</h2>
-            <p><a href="{% url 'create_post' profile.pk %}">Create New Post</a></p>
+            {% if user.is_authenticated and user == profile.user %}
+                <p><a href="{% url 'create_post' %}">Create New Post</a></p>
+            {% endif %}
             {% for post in profile.get_all_posts %}
                 <article class="profile-detail-card">
                     <div class="profile-detail-content">

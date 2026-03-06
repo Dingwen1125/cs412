@@ -12,13 +12,30 @@
                 <p><strong>Author:</strong> @{{post.profile.username}}</p>
                 <p><strong>Posted:</strong> {{post.timestamp}}</p>
                 <p><strong>Likes:</strong> {{ post.get_likes|length }}</p>
+                {% if user.is_authenticated and can_like %}
+                    {% if has_liked %}
+                        <form method="post" action="{% url 'delete_like_post' post.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit">已点赞</button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'like_post' post.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit">Like</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
                 {% if post.caption %}
                     <p class="profile-detail-bio">{{post.caption}}</p>
                 {% else %}
                     <p class="profile-detail-bio">(No caption)</p>
                 {% endif %}
-                <p><a href="{% url 'update_post' post.pk %}">update</a></p>
-                <p><a href="{% url 'delete_post' post.pk %}">delete</a></p>
+                {% if user.is_authenticated and user == post.profile.user %}
+                    <p><a href="{% url 'update_post' post.pk %}">update</a></p>
+                    <p><a href="{% url 'delete_post' post.pk %}">delete</a></p>
+                {% endif %}
             </div>
         </article>
 

@@ -14,7 +14,9 @@
         <h3>{{profile.username}}</h3>
     </div>
     <a href="{% url 'show_profile' profile.pk %}">
-        <img src="{{profile.profile_image_url}}" alt="">
+        {% if profile.get_profile_image_url %}
+            <img src="{{ profile.get_profile_image_url }}" alt="">
+        {% endif %}
     </a>
     </article>
     {% endfor %}

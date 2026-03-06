@@ -4,12 +4,15 @@
 
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Profile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     username = models.TextField(blank=True)
     display_name = models.TextField(blank=True)
     profile_image_url = models.URLField(blank=True)
+    profile_image_file = models.ImageField(blank=True)
     bio_text = models.TextField(blank=True)
     join_date = models.DateTimeField(auto_now=True)
 
@@ -44,6 +47,11 @@ class Profile(models.Model):
         '''get post feed'''
         following_ids = Follow.objects.filter(follower_profile=self).values_list("profile_id", flat=True)
         return Post.objects.filter(profile_id__in=following_ids).order_by("-timestamp")
+
+    def get_profile_image_url(self):
+        if self.profile_image_file:
+            return self.profile_image_file.url
+        return self.profile_image_url
 
 
 

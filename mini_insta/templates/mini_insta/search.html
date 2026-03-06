@@ -8,7 +8,7 @@
     <article class="profile-detail-card">
         <div class="profile-detail-content">
             <h2>Search</h2>
-            <form method="GET" action="{% url 'search' profile.pk %}">
+            <form method="GET" action="{% url 'search' %}">
                 <div>
                     <label for="id_query">Search text:</label>
                     <textarea id="id_query" name="query" rows="3" cols="50" required></textarea>
@@ -17,7 +17,9 @@
                     <input type="submit" value="Search">
                 </div>
             </form>
-            <p><a href="{% url 'show_feed' profile.pk %}">Back to Feed</a></p>
+            {% if user == profile.user %}
+                <p><a href="{% url 'show_feed' %}">Back to Feed</a></p>
+            {% endif %}
         </div>
     </article>
 </main>
