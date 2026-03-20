@@ -1,0 +1,30 @@
+<!--
+    File: graphs.html
+    Author: Dingwen Yang (laoba@bu.edu), 3/19/2026
+    Description: Template for displaying the voter search form
+    and the three graph.
+-->
+{% extends 'voter_analytics/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Voter Graphs</h1>
+
+    <div class="row">
+        <!-- Reuse the shared voter search form to filter graph data. -->
+        {% include "voter_analytics/search.html" %}
+    </div>
+
+    <div class="row">
+        {{ graph_div_birth_year|safe }}
+    </div>
+
+    <div class="row">
+        {{ graph_div_party|safe }}
+    </div>
+
+    <div class="row">
+        {{ graph_div_elections|safe }}
+    </div>
+</div>
+{% endblock %}

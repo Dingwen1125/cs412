@@ -1,6 +1,10 @@
+# File: models.py
+# Author: Dingwen Yang (laoba@bu.edu), 3/19/2026
+# Description: Django model and data-loading function for the
+# voter analytics application.
+
 from django.db import models
 
-# Create your models here.
 class Voter(models.Model):
     last_name = models.TextField()
     first_name = models.TextField()
@@ -25,14 +29,17 @@ class Voter(models.Model):
         return f'{self.first_name} {self.last_name} ({self.street_num} {self.street_name})'
 
 def load_data():
+    """Load voter records from the CSV file into the Voter model table."""
+
     Voter.objects.all().delete()
-    filename = '/Users/yangding/Desktop/newton_voters.csv'
+    filename = 'newton_voters.csv'
     f = open(filename)
     f.readline() # discard headers
 
     for line in f:
         fields = line.split(',')
 
+        # Skip malformed rows so that one bad record does not stop the full import.
         try:
             voter = Voter(last_name = fields[1],
                           first_name = fields[2],

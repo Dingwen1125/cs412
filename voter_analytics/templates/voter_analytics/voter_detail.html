@@ -1,0 +1,50 @@
+<!--
+    File: voter_detail.html
+    Author: Dingwen Yang (laoba@bu.edu), 3/19/2026
+    Description: Template for displaying one voter's detail information and linking the address to Google Maps.
+-->
+{% extends 'voter_analytics/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Showing Voter Details</h1>
+
+    <div class="row">
+        <!-- Let the user return to the main voter list page. -->
+        <p><a href="{% url 'home' %}">Back to all voters</a></p>
+    </div>
+
+    <div class="row">
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Date of Birth</th>
+                <th>Date of Registration</th>
+                <th>v20state</th>
+                <th>v21town</th>
+                <th>v21primary</th>
+                <th>v22general</th>
+                <th>v23town</th>
+            </tr>
+            <!-- Show the selected voter's key fields in a single summary row. -->
+            <tr>
+                <td>{{ voter.first_name }} {{ voter.last_name }}</td>
+                <td>
+                    <a href="{{ google_maps_url }}" target="_blank">
+                        {{ voter.street_num }} {{ voter.street_name }}, Apartment {{ voter.apartment_num }}, {{ voter.zip_code }}
+                    </a>
+                </td>
+                <td>{{ voter.date_of_birth }}</td>
+                <td>{{ voter.date_of_registration }}</td>
+                <td>{{ voter.v20state }}</td>
+                <td>{{ voter.v21town }}</td>
+                <td>{{ voter.v21primary }}</td>
+                <td>{{ voter.v22general }}</td>
+                <td>{{ voter.v23town }}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

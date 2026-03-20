@@ -1,0 +1,78 @@
+<!--
+    File: search.html
+    Author: Dingwen Yang (laoba@bu.edu), 3/19/2026
+    Description:form for filtering voter records on the list page and the graphs page.
+-->
+<form method="get">
+    <!-- Let the user optionally narrow results by party affiliation. -->
+    <p>
+        <label for="party_affiliation">Party:</label>
+        <select name="party_affiliation" id="party_affiliation">
+            <option value="">Any</option>
+            <!-- Create one dropdown option for each distinct party value. -->
+            {% for party in party_choices %}
+            <option value="{{ party }}">
+                {{ party }}
+            </option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <!-- Let the user choose a minimum birth year. -->
+    <p>
+        <label for="min_birth_year">Minimum birth year:</label>
+        <select name="min_birth_year" id="min_birth_year">
+            <option value="">Any</option>
+            <!-- Create one dropdown option for each available birth year. -->
+            {% for year in birth_years %}
+            <option value="{{ year|date:'Y' }}">
+                {{ year|date:"Y" }}
+            </option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <!-- Let the user choose a maximum birth year. -->
+    <p>
+        <label for="max_birth_year">Maximum birth year:</label>
+        <select name="max_birth_year" id="max_birth_year">
+            <option value="">Any</option>
+            <!-- Create one dropdown option for each available birth year. -->
+            {% for year in birth_years %}
+            <option value="{{ year|date:'Y' }}">
+                {{ year|date:"Y" }}
+            </option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <!-- Let the user optionally filter by voter score. -->
+    <p>
+        <label for="voter_score">Voter score:</label>
+        <select name="voter_score" id="voter_score">
+            <option value="">Any</option>
+            <!-- Create one dropdown option for each distinct score value. -->
+            {% for score in score_choices %}
+            <option value="{{ score }}">
+                {{ score }}
+            </option>
+            {% endfor %}
+        </select>
+    </p>
+    <br>
+
+    <!-- Let the user require participation in any checked elections. -->
+    <p>Voted in specific elections:</p>
+    <p>
+        <label><input type="checkbox" name="v20state" value="on"> v20state</label>
+        <label><input type="checkbox" name="v21town" value="on"> v21town</label>
+        <label><input type="checkbox" name="v21primary" value="on"> v21primary</label>
+        <label><input type="checkbox" name="v22general" value="on"> v22general</label>
+        <label><input type="checkbox" name="v23town" value="on"> v23town</label>
+    </p>
+
+    <!-- Submit the selected filtering criteria to the current page. -->
+    <p>
+        <button type="submit">Search</button>
+    </p>
+</form>

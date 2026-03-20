@@ -1,0 +1,29 @@
+<!--
+    File: base.html
+    Author: Dingwen Yang (laoba@bu.edu), 3/19/2026
+    Description: Base template for voter analytics pages,
+    including shared navigation and stylesheet links.
+-->
+{% load static %}
+<html>
+    <head>
+        <title>Voter Analytics</title>
+        <link rel="stylesheet" href="{% static 'styles_ma.css' %}">
+    </head>
+    <body>
+        <header>
+            <h1>Voter Analytics</h1>
+            <nav>
+                <ul>
+                    <!-- Provide shared navigation between the list and graph pages. -->
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'graphs' %}">Graphs</a></li>
+                </ul>
+            </nav>
+        </header>
+    
+    {% block content %}
+    {% endblock %}    
+  
+    </body>
+</html>
