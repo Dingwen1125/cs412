@@ -1,0 +1,31 @@
+{% extends "dadjokes/base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Random Joke</h2>
+    {% if joke %}
+        <p>{{ joke.text }}</p>
+        <p class="meta">
+            Contributed by {{ joke.contributor }} on {{ joke.created_at }}
+            |
+            <a href="{% url 'dadjokes_joke_detail' joke.pk %}">View joke</a>
+        </p>
+    {% else %}
+        <p>No jokes have been added yet.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Random Picture</h2>
+    {% if picture %}
+        <img src="{{ picture.image_url }}" alt="A silly picture contributed to Dadjokes">
+        <p class="meta">
+            Contributed by {{ picture.contributor }} on {{ picture.created_at }}
+            |
+            <a href="{% url 'dadjokes_picture_detail' picture.pk %}">View picture</a>
+        </p>
+    {% else %}
+        <p>No pictures have been added yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

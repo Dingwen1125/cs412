@@ -1,0 +1,10 @@
+{% extends "dadjokes/base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Picture #{{ picture.pk }}</h2>
+    <img src="{{ picture.image_url }}" alt="A silly picture contributed to Dadjokes">
+    <p><a href="{{ picture.image_url }}" target="_blank" rel="noopener noreferrer">{{ picture.image_url }}</a></p>
+    <p class="meta">Contributed by {{ picture.contributor }} on {{ picture.created_at }}</p>
+</div>
+{% endblock %}

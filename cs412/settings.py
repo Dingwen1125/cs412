@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "rest_framework",
     "hw",
     "quote",
     "formdata",
@@ -49,7 +50,8 @@ INSTALLED_APPS = [
     "blog",
     "mini_insta",
     "marathon_analytics",
-    "voter_analytics"
+    "voter_analytics",
+    "dadjokes",
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,18 @@
+{% extends "dadjokes/base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>All Pictures</h2>
+    {% if pictures %}
+        {% for picture in pictures %}
+            <article>
+                <p><a href="{% url 'dadjokes_picture_detail' picture.pk %}">{{ picture.image_url }}</a></p>
+                <p class="meta">Contributed by {{ picture.contributor }} on {{ picture.created_at }}</p>
+            </article>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>No pictures have been added yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
