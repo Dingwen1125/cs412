@@ -1,5 +1,8 @@
-from django.urls import path
+# File: urls.py
+# Author: Dingwen Yang(laoba@bu.edu), 4/2/2026
+# Description:URL routes to views for the dadjokes app.
 
+from django.urls import path
 from . import views
 
 urlpatterns = [

@@ -1,3 +1,7 @@
+# File: models.py
+# Author: Dingwen Yang(laoba@bu.edu), 4/2/2026
+# Description: Define the dadjokes' data model.
+
 from django.db import models
 
 
