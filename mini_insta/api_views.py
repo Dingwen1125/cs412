@@ -46,11 +46,18 @@ class APILoginView(APIView):
             )
 
         token, _ = Token.objects.get_or_create(user=user)
+        profile = Profile.objects.filter(user=user).order_by("pk").first()
+        if profile is None:
+            return Response(
+                {"error": "This account does not have a MiniInsta profile."},
+                status=HTTP_400_BAD_REQUEST,
+            )
         return Response(
             {
                 "token": token.key,
                 "user_id": user.id,
                 "username": user.username,
+                "profile_id": profile.pk,
             },
             status=HTTP_200_OK,
         )
