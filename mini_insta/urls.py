@@ -5,7 +5,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
-from .api_views import MiniInstaAPIRootView, PostCreateAPIView, ProfileDetailAPIView, ProfileFeedAPIView, ProfileListAPIView, ProfilePostsAPIView
+from .api_views import APILoginView, MiniInstaAPIRootView, PostCreateAPIView, ProfileDetailAPIView, ProfileFeedAPIView, ProfileListAPIView, ProfilePostsAPIView
 from .views import ShowAllView, CreateProfileView, ProfileDetailView, MyProfileDetailView, ShowFollowersDetailView, ShowFollowingDetailView, PostFeedListView, SearchView, PostDetailView, CreatePostView, UpdateProfileView, DeletePostView, UpdatePostView, FollowProfileView, DeleteFollowProfileView, LikePostView, DeleteLikePostView
 urlpatterns = [
     path('', ShowAllView.as_view(), name="show_all"),
@@ -29,6 +29,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='logout_confirmation'), name='logout'),
     path('logout_confirmation/', TemplateView.as_view(template_name='mini_insta/logged_out.html'), name='logout_confirmation'),
     path('api/', MiniInstaAPIRootView.as_view(), name='api_root'),
+    path('api/login', APILoginView.as_view(), name='api_login'),
     path('api/profiles', ProfileListAPIView.as_view(), name='api_profiles'),
     path('api/profiles/<int:pk>', ProfileDetailAPIView.as_view(), name='api_profile_detail'),
     path('api/profiles/<int:pk>/posts', ProfilePostsAPIView.as_view(), name='api_profile_posts'),
