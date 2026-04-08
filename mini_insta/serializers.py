@@ -3,6 +3,18 @@ from rest_framework import serializers
 from .models import Follow, Photo, Post, Profile
 
 
+def build_absolute_media_url(serializer, url):
+    if not url:
+        return url
+    if url.startswith("http://") or url.startswith("https://"):
+        return url
+
+    request = serializer.context.get("request")
+    if request is None:
+        return url
+    return request.build_absolute_uri(url)
+
+
 class PhotoSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
@@ -11,7 +23,7 @@ class PhotoSerializer(serializers.ModelSerializer):
         fields = ["id", "image", "timestamp"]
 
     def get_image(self, obj):
-        return obj.get_image_url()
+        return build_absolute_media_url(self, obj.get_image_url())
 
 
 class ProfileSummarySerializer(serializers.ModelSerializer):
@@ -22,7 +34,7 @@ class ProfileSummarySerializer(serializers.ModelSerializer):
         fields = ["id", "username", "display_name", "profile_image"]
 
     def get_profile_image(self, obj):
-        return obj.get_profile_image_url()
+        return build_absolute_media_url(self, obj.get_profile_image_url())
 
 
 class ProfileSerializer(ProfileSummarySerializer):
