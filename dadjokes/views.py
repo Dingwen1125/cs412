@@ -19,7 +19,7 @@ def _get_random_pair():
     pictures = list(Picture.objects.all())
     return {
         "joke": random.choice(jokes) if jokes else None,
-        "picture": random.choice(pictures) if pictures else None,
+        "picture": random.choice(pictures) if pictures else None
     }
 
 
