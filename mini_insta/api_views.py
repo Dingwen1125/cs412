@@ -12,6 +12,19 @@ from .models import Post, Profile
 from .serializers import CreatePostSerializer, PostSerializer, ProfileSerializer
 
 
+class RequestTokenAuthentication(TokenAuthentication):
+    def authenticate(self, request):
+        auth_result = super().authenticate(request)
+        if auth_result is not None:
+            return auth_result
+
+        token_key = request.query_params.get("token") or request.data.get("token")
+        if not token_key:
+            return None
+
+        return self.authenticate_credentials(token_key)
+
+
 class MiniInstaAPIRootView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -96,4 +109,4 @@ class ProfileFeedAPIView(generics.ListAPIView):
 class PostCreateAPIView(generics.CreateAPIView):
     serializer_class = CreatePostSerializer
     permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    authentication_classes = [RequestTokenAuthentication, TokenAuthentication, SessionAuthentication]
