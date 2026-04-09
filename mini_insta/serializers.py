@@ -1,9 +1,13 @@
+# File: serializers.py
+# Author: Dingwen Yang(laoba@bu.edu), 4/9/2026
+# Description: Serializers for the mini_insta app.
 from rest_framework import serializers
 
 from .models import Follow, Photo, Post, Profile
 
 
 def build_absolute_media_url(serializer, url):
+    '''Convert a media URL to an absolute URL'''
     if not url:
         return url
     if url.startswith("http://") or url.startswith("https://"):
@@ -16,6 +20,7 @@ def build_absolute_media_url(serializer, url):
 
 
 class PhotoSerializer(serializers.ModelSerializer):
+    '''Serializer for the Photo model that includes an absolute URL for the image'''
     image = serializers.SerializerMethodField()
 
     class Meta:
@@ -27,6 +32,7 @@ class PhotoSerializer(serializers.ModelSerializer):
 
 
 class ProfileSummarySerializer(serializers.ModelSerializer):
+    '''Serializer for a summary view of the Profile model'''
     profile_image = serializers.SerializerMethodField()
 
     class Meta:
@@ -38,6 +44,7 @@ class ProfileSummarySerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(ProfileSummarySerializer):
+    '''Serializer for the Profile model that includes additional details and its followers and following counts'''
     follower_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
     profile_url = serializers.HyperlinkedIdentityField(
@@ -62,6 +69,7 @@ class ProfileSerializer(ProfileSummarySerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
+    '''Serializer for the Post model that includes the profile summary, photos, and counts of likes and comments'''
     profile = ProfileSummarySerializer(read_only=True)
     photos = serializers.SerializerMethodField()
     like_count = serializers.SerializerMethodField()
@@ -91,6 +99,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CreatePostSerializer(serializers.ModelSerializer):
+    '''Serializer for creating a new Post that accepts caption and multiple images as URLs or file uploads'''
     image_urls = serializers.ListField(
         child=serializers.URLField(),
         required=False,
@@ -111,6 +120,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "timestamp", "photos"]
 
     def validate(self, attrs):
+        '''Validate that the user is authenticated and has a profile before creating a post'''
         request = self.context["request"]
         if not request.user.is_authenticated:
             raise serializers.ValidationError("Authentication is required to create a post.")
@@ -120,6 +130,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        '''Create a new Post instance along with associated Photo instances based on the provided image and files'''
         request = self.context["request"]
         profile = Profile.objects.filter(user=request.user).order_by("pk").first()
         image_urls = validated_data.pop("image_urls", [])
@@ -132,7 +143,6 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
         for image_file in image_files:
             Photo.objects.create(post=post, image_file=image_file)
-
         return post
 
     def get_photos(self, obj):
