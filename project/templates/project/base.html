@@ -117,6 +117,10 @@
             {% with current_household=user.roommate_households.first %}
                 {% if current_household %}
                 <span>Household: <strong><a href="{{ current_household.get_absolute_url }}">{{ current_household.name }}</a></strong></span>
+                <form class="logout-form" method="post" action="{% url 'project_leave_household' %}">
+                    {% csrf_token %}
+                    <button type="submit">Leave</button>
+                </form>
                 {% else %}
                 <span>Household: <strong>Not joined</strong></span>
                 {% endif %}

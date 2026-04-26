@@ -140,6 +140,7 @@ class CompletedRecordCleanupTests(TestCase):
         )
         Chore.objects.filter(pk=chore.pk).update(completed_at=timezone.now() - timedelta(days=8))
 
+        self.client.login(username="alice", password="password123")
         self.client.get(reverse("project_chore_list"))
 
         self.assertFalse(Chore.objects.filter(pk=chore.pk).exists())
@@ -154,6 +155,7 @@ class CompletedRecordCleanupTests(TestCase):
         )
         Chore.objects.filter(pk=chore.pk).update(completed_at=timezone.now() - timedelta(days=6))
 
+        self.client.login(username="alice", password="password123")
         self.client.get(reverse("project_chore_list"))
 
         self.assertTrue(Chore.objects.filter(pk=chore.pk).exists())
@@ -487,3 +489,108 @@ class HouseholdJoinSearchTests(TestCase):
 
         self.assertRedirects(response, reverse("project_home"))
         self.assertTrue(self.household_a.members.filter(pk=self.user.pk).exists())
+
+
+class HomeAndHouseholdStatusTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="alice", password="password123")
+        self.household = Household.objects.create(
+            name="Apartment A",
+            address="1 A St",
+            move_in_date="2026-01-01",
+        )
+        self.other_household = Household.objects.create(
+            name="Apartment B",
+            address="2 B St",
+            move_in_date="2026-01-01",
+        )
+        self.household.members.add(self.user)
+        Expense.objects.create(
+            household=self.household,
+            created_by=self.user,
+            title="Current expense",
+            amount=Decimal("12.00"),
+            expense_date="2026-01-01",
+            category="Food",
+        )
+        Expense.objects.create(
+            household=self.other_household,
+            created_by=self.user,
+            title="Other expense",
+            amount=Decimal("12.00"),
+            expense_date="2026-01-01",
+            category="Food",
+        )
+        Chore.objects.create(
+            household=self.household,
+            assigned_to=self.user,
+            title="Current chore",
+            due_date="2026-01-02",
+        )
+        Chore.objects.create(
+            household=self.other_household,
+            assigned_to=self.user,
+            title="Other chore",
+            due_date="2026-01-02",
+        )
+        Message.objects.create(
+            household=self.household,
+            author=self.user,
+            title="Current message",
+            body="Hello.",
+        )
+        Message.objects.create(
+            household=self.other_household,
+            author=self.user,
+            title="Other message",
+            body="Hello.",
+        )
+
+    def test_home_counts_current_household_only(self):
+        self.client.login(username="alice", password="password123")
+        response = self.client.get(reverse("project_home"))
+
+        self.assertEqual(response.context["expense_count"], 1)
+        self.assertEqual(response.context["chore_count"], 1)
+        self.assertEqual(response.context["message_count"], 1)
+
+    def test_home_counts_are_zero_without_login_or_household(self):
+        response = self.client.get(reverse("project_home"))
+
+        self.assertEqual(response.context["expense_count"], 0)
+        self.assertEqual(response.context["chore_count"], 0)
+        self.assertEqual(response.context["message_count"], 0)
+
+        self.household.members.remove(self.user)
+        self.client.login(username="alice", password="password123")
+        response = self.client.get(reverse("project_home"))
+
+        self.assertEqual(response.context["expense_count"], 0)
+        self.assertEqual(response.context["chore_count"], 0)
+        self.assertEqual(response.context["message_count"], 0)
+
+    def test_protected_project_pages_redirect_anonymous_users_to_login(self):
+        protected_urls = [
+            reverse("project_household_list"),
+            reverse("project_expense_list"),
+            reverse("project_my_expense_shares"),
+            reverse("project_who_owes_me"),
+            reverse("project_chore_list"),
+            reverse("project_message_list"),
+            reverse("project_join_household"),
+            reverse("project_household_create"),
+            reverse("project_expense_create"),
+            reverse("project_chore_create"),
+        ]
+
+        for url in protected_urls:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            self.assertTrue(response.url.startswith("/project/login/"))
+
+    def test_user_can_leave_current_household(self):
+        self.client.login(username="alice", password="password123")
+        response = self.client.post(reverse("project_leave_household"))
+
+        self.assertRedirects(response, reverse("project_home"))
+        self.assertFalse(self.household.members.filter(pk=self.user.pk).exists())

@@ -54,9 +54,15 @@ class ProjectHomeView(TemplateView):
     def get_context_data(self, **kwargs):
         """Add dashboard counts to the template context."""
         context = super().get_context_data(**kwargs)
-        context["expense_count"] = Expense.objects.count()
-        context["chore_count"] = Chore.objects.count()
-        context["message_count"] = Message.objects.count()
+        household = get_user_household(self.request.user)
+        if household is None:
+            context["expense_count"] = 0
+            context["chore_count"] = 0
+            context["message_count"] = 0
+            return context
+        context["expense_count"] = Expense.objects.filter(household=household).count()
+        context["chore_count"] = Chore.objects.filter(household=household).count()
+        context["message_count"] = Message.objects.filter(household=household).count()
         return context
 
 
@@ -76,7 +82,7 @@ class ProjectLogoutView(LogoutView):
     next_page = reverse_lazy("project_home")
 
 
-class HouseholdListView(ListView):
+class HouseholdListView(LoginRequiredMixin, ListView):
     """Display all households."""
 
     model = Household
@@ -84,7 +90,7 @@ class HouseholdListView(ListView):
     context_object_name = "households"
 
 
-class HouseholdDetailView(DetailView):
+class HouseholdDetailView(LoginRequiredMixin, DetailView):
     """Display one household."""
 
     model = Household
@@ -108,7 +114,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
         return Expense.objects.filter(household=household).annotate(share_count=Count("shares"))
 
 
-class ExpenseDetailView(DetailView):
+class ExpenseDetailView(LoginRequiredMixin, DetailView):
     """Display one expense in the user's current household."""
 
     model = Expense
@@ -136,7 +142,7 @@ class ExpenseDetailView(DetailView):
         return context
 
 
-class ChoreListView(ListView):
+class ChoreListView(LoginRequiredMixin, ListView):
     """Display chores for the user's current household."""
 
     model = Chore
@@ -152,7 +158,7 @@ class ChoreListView(ListView):
         return Chore.objects.filter(household=household)
 
 
-class ChoreDetailView(DetailView):
+class ChoreDetailView(LoginRequiredMixin, DetailView):
     """Display one chore in the user's current household."""
 
     model = Chore
@@ -172,7 +178,7 @@ class ChoreDetailView(DetailView):
         return Chore.objects.filter(household=household)
 
 
-class ExpenseShareDetailView(DetailView):
+class ExpenseShareDetailView(LoginRequiredMixin, DetailView):
     """Display one expense share owed by the current user."""
 
     model = ExpenseShare
@@ -355,6 +361,16 @@ class JoinHouseholdView(LoginRequiredMixin, TemplateView):
         for household in Household.objects.filter(members=self.request.user).exclude(pk=selected_household.pk):
             household.members.remove(self.request.user)
         selected_household.members.add(self.request.user)
+        return redirect("project_home")
+
+
+class LeaveHouseholdView(LoginRequiredMixin, View):
+    """Remove the current user from their current household."""
+
+    def post(self, request, *args, **kwargs):
+        """Remove the current user from all joined households."""
+        for household in Household.objects.filter(members=request.user):
+            household.members.remove(request.user)
         return redirect("project_home")
 
 
