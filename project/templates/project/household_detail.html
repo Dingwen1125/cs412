@@ -9,6 +9,7 @@
 <h2>{{ household.name }}</h2>
 <p><strong>Address:</strong> {{ household.address }}</p>
 <p><strong>Move-in Date:</strong> {{ household.move_in_date }}</p>
+<p><strong>Manager:</strong> {{ household.manager.username|default:"No manager assigned." }}</p>
 
 <h3>Members</h3>
 <ul>
@@ -18,6 +19,41 @@
     <li>No members yet.</li>
     {% endfor %}
 </ul>
+
+{% if is_manager %}
+<h3>Join Requests</h3>
+<ul>
+    {% for join_request in pending_join_requests %}
+    <li>
+        {{ join_request.user.username }}
+        <form method="post" action="{% url 'project_household_join_request_approve' join_request.pk %}">
+            {% csrf_token %}
+            <button type="submit">Approve</button>
+        </form>
+    </li>
+    {% empty %}
+    <li>No pending join requests.</li>
+    {% endfor %}
+</ul>
+
+<h3>Transfer Manager</h3>
+{% if manager_transfer_members %}
+<form method="post" action="{% url 'project_household_transfer_manager' household.pk %}">
+    {% csrf_token %}
+    <p>
+        <label for="manager_id">New Manager:</label>
+        <select id="manager_id" name="manager_id">
+            {% for member in manager_transfer_members %}
+            <option value="{{ member.pk }}">{{ member.username }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <button type="submit">Transfer Manager</button>
+</form>
+{% else %}
+<p>No other members are available for manager transfer.</p>
+{% endif %}
+{% endif %}
 
 <h3>Expenses</h3>
 <ul>

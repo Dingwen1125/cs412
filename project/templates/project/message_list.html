@@ -12,6 +12,21 @@
 <p>Messages for <strong>{{ household.name }}</strong>. Only members of this household can see or comment here.</p>
 <p><a class="button" href="{% url 'project_message_create' %}">Post Message</a></p>
 
+{% if is_manager and pending_join_requests %}
+<h3>Join Requests</h3>
+<ul>
+    {% for join_request in pending_join_requests %}
+    <li>
+        {{ join_request.user.username }}
+        <form method="post" action="{% url 'project_household_join_request_approve' join_request.pk %}">
+            {% csrf_token %}
+            <button type="submit">Approve</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 <table>
     <tr>
         <th>Title</th>

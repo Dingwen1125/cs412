@@ -1,13 +1,20 @@
 from django.contrib import admin
 
-from .models import Chore, Expense, ExpenseShare, Household, Message, MessageComment
+from .models import Chore, Expense, ExpenseShare, Household, HouseholdJoinRequest, Message, MessageComment
 
 
 @admin.register(Household)
 class HouseholdAdmin(admin.ModelAdmin):
-    list_display = ("name", "address", "move_in_date", "get_member_count")
-    search_fields = ("name", "address")
+    list_display = ("name", "address", "move_in_date", "manager", "get_member_count")
+    search_fields = ("name", "address", "manager__username")
     filter_horizontal = ("members",)
+
+
+@admin.register(HouseholdJoinRequest)
+class HouseholdJoinRequestAdmin(admin.ModelAdmin):
+    list_display = ("household", "user", "created_at")
+    list_filter = ("household", "created_at")
+    search_fields = ("household__name", "user__username")
 
 
 class ExpenseShareInline(admin.TabularInline):

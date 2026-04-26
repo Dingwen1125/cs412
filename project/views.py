@@ -6,6 +6,7 @@ from datetime import timedelta
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib import messages
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -24,7 +25,7 @@ from .forms import (
     MessageForm,
     UserRegistrationForm,
 )
-from .models import Chore, Expense, ExpenseShare, Household, Message
+from .models import Chore, Expense, ExpenseShare, Household, HouseholdJoinRequest, Message
 
 
 def get_user_household(user):
@@ -96,6 +97,14 @@ class HouseholdDetailView(LoginRequiredMixin, DetailView):
     model = Household
     template_name = "project/household_detail.html"
     context_object_name = "household"
+
+    def get_context_data(self, **kwargs):
+        """Add manager controls to the template context."""
+        context = super().get_context_data(**kwargs)
+        context["is_manager"] = self.object.manager_id == self.request.user.id
+        context["pending_join_requests"] = self.object.join_requests.select_related("user")
+        context["manager_transfer_members"] = self.object.members.exclude(pk=self.request.user.pk)
+        return context
 
 
 class ExpenseListView(LoginRequiredMixin, ListView):
@@ -329,6 +338,8 @@ class HouseholdCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         """Save the household and add the current user as a member."""
         response = super().form_valid(form)
+        self.object.manager = self.request.user
+        self.object.save()
         self.object.members.add(self.request.user)
         return response
 
@@ -356,12 +367,38 @@ class JoinHouseholdView(LoginRequiredMixin, TemplateView):
         )
 
     def post(self, request, *args, **kwargs):
-        """Move the current user into the selected household."""
+        """Request permission to join the selected household."""
         selected_household = get_object_or_404(Household, pk=request.POST.get("household_id"))
-        for household in Household.objects.filter(members=self.request.user).exclude(pk=selected_household.pk):
-            household.members.remove(self.request.user)
-        selected_household.members.add(self.request.user)
+        if selected_household.members.filter(pk=request.user.pk).exists():
+            return redirect("project_home")
+        HouseholdJoinRequest.objects.get_or_create(household=selected_household, user=request.user)
         return redirect("project_home")
+
+
+class ApproveHouseholdJoinRequestView(LoginRequiredMixin, View):
+    """Approve a request to join a household managed by the current user."""
+
+    def post(self, request, pk):
+        """Add the request user to the household and delete the request."""
+        join_request = get_object_or_404(HouseholdJoinRequest, pk=pk, household__manager=request.user)
+        for household in Household.objects.filter(members=join_request.user).exclude(pk=join_request.household.pk):
+            household.members.remove(join_request.user)
+        join_request.household.members.add(join_request.user)
+        household_pk = join_request.household.pk
+        join_request.delete()
+        return redirect("project_household_detail", pk=household_pk)
+
+
+class TransferHouseholdManagerView(LoginRequiredMixin, View):
+    """Transfer household manager permissions to another member."""
+
+    def post(self, request, pk):
+        """Set another household member as manager."""
+        household = get_object_or_404(Household, pk=pk, manager=request.user)
+        new_manager = get_object_or_404(household.members, pk=request.POST.get("manager_id"))
+        household.manager = new_manager
+        household.save()
+        return redirect("project_household_detail", pk=household.pk)
 
 
 class LeaveHouseholdView(LoginRequiredMixin, View):
@@ -369,6 +406,11 @@ class LeaveHouseholdView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         """Remove the current user from all joined households."""
+        managed_household = Household.objects.filter(members=request.user, manager=request.user).first()
+        if managed_household is not None:
+            messages.error(request, "Transfer manager permission before leaving this household.")
+            return redirect(managed_household.get_absolute_url())
+
         for household in Household.objects.filter(members=request.user):
             household.members.remove(request.user)
         return redirect("project_home")
@@ -477,9 +519,17 @@ class MessageListView(LoginRequiredMixin, ListView):
         return Message.objects.filter(household=household).select_related("author", "household")
 
     def get_context_data(self, **kwargs):
-        """Add the current household to the template context."""
+        """Add the current household and manager controls to the template context."""
         context = super().get_context_data(**kwargs)
-        context["household"] = get_user_household(self.request.user)
+        household = get_user_household(self.request.user)
+        context["household"] = household
+        context["is_manager"] = household is not None and household.manager_id == self.request.user.id
+        if household is not None:
+            context["pending_join_requests"] = household.join_requests.select_related("user")
+            context["manager_transfer_members"] = household.members.exclude(pk=self.request.user.pk)
+        else:
+            context["pending_join_requests"] = HouseholdJoinRequest.objects.none()
+            context["manager_transfer_members"] = Household.objects.none()
         return context
 
 

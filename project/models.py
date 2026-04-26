@@ -15,6 +15,13 @@ class Household(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
     move_in_date = models.DateField()
+    manager = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name="managed_households",
+        blank=True,
+        null=True,
+    )
     members = models.ManyToManyField(User, related_name="roommate_households", blank=True)
 
     class Meta:
@@ -28,6 +35,19 @@ class Household(models.Model):
 
     def get_member_count(self):
         return self.members.count()
+
+
+class HouseholdJoinRequest(models.Model):
+    household = models.ForeignKey(Household, on_delete=models.CASCADE, related_name="join_requests")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="household_join_requests")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+        unique_together = [("household", "user")]
+
+    def __str__(self):
+        return f"{self.user.username} wants to join {self.household.name}"
 
 
 class Expense(models.Model):

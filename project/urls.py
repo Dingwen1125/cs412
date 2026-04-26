@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    ApproveHouseholdJoinRequestView,
     ChoreCreateView,
     ChoreDetailView,
     ChoreListView,
@@ -25,6 +26,7 @@ from .views import (
     ProjectLoginView,
     ProjectLogoutView,
     RegisterUserView,
+    TransferHouseholdManagerView,
     WhoOwesMeListView,
 )
 
@@ -38,6 +40,8 @@ urlpatterns = [
     path("households/<int:pk>/", HouseholdDetailView.as_view(), name="project_household_detail"),
     path("households/join/", JoinHouseholdView.as_view(), name="project_join_household"),
     path("households/leave/", LeaveHouseholdView.as_view(), name="project_leave_household"),
+    path("households/join-requests/<int:pk>/approve/", ApproveHouseholdJoinRequestView.as_view(), name="project_household_join_request_approve"),
+    path("households/<int:pk>/transfer-manager/", TransferHouseholdManagerView.as_view(), name="project_household_transfer_manager"),
     path("expenses/", ExpenseListView.as_view(), name="project_expense_list"),
     path("my-expenseshares/", MyExpenseShareListView.as_view(), name="project_my_expense_shares"),
     path("who-owes-me/", WhoOwesMeListView.as_view(), name="project_who_owes_me"),

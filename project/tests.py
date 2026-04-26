@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .forms import ChoreForm, ExpenseForm, ExpenseShareForm
-from .models import Chore, Expense, ExpenseShare, Household, Message, MessageComment
+from .models import Chore, Expense, ExpenseShare, Household, HouseholdJoinRequest, Message, MessageComment
 
 
 class MessagePermissionTests(TestCase):
@@ -480,7 +480,7 @@ class HouseholdJoinSearchTests(TestCase):
         self.assertNotContains(response, "<select", html=False)
         self.assertEqual(list(response.context["search_results"]), [self.household_b])
 
-    def test_join_household_result_button_joins_household(self):
+    def test_join_household_result_button_creates_join_request(self):
         self.client.login(username="alice", password="password123")
         response = self.client.post(
             reverse("project_join_household"),
@@ -488,7 +488,69 @@ class HouseholdJoinSearchTests(TestCase):
         )
 
         self.assertRedirects(response, reverse("project_home"))
+        self.assertFalse(self.household_a.members.filter(pk=self.user.pk).exists())
+        self.assertTrue(HouseholdJoinRequest.objects.filter(household=self.household_a, user=self.user).exists())
+
+    def test_manager_can_approve_join_request(self):
+        manager = User.objects.create_user(username="manager", password="password123")
+        self.household_a.manager = manager
+        self.household_a.save()
+        self.household_a.members.add(manager)
+        join_request = HouseholdJoinRequest.objects.create(household=self.household_a, user=self.user)
+
+        self.client.login(username="manager", password="password123")
+        response = self.client.post(reverse("project_household_join_request_approve", kwargs={"pk": join_request.pk}))
+
+        self.assertRedirects(response, self.household_a.get_absolute_url())
         self.assertTrue(self.household_a.members.filter(pk=self.user.pk).exists())
+        self.assertFalse(HouseholdJoinRequest.objects.filter(pk=join_request.pk).exists())
+
+    def test_manager_can_transfer_manager_to_roommate(self):
+        manager = User.objects.create_user(username="manager", password="password123")
+        roommate = User.objects.create_user(username="roommate", password="password123")
+        self.household_a.manager = manager
+        self.household_a.save()
+        self.household_a.members.add(manager, roommate)
+
+        self.client.login(username="manager", password="password123")
+        response = self.client.post(
+            reverse("project_household_transfer_manager", kwargs={"pk": self.household_a.pk}),
+            {"manager_id": roommate.pk},
+        )
+
+        self.assertRedirects(response, self.household_a.get_absolute_url())
+        self.household_a.refresh_from_db()
+        self.assertEqual(self.household_a.manager, roommate)
+
+    def test_join_requests_appear_on_messages_page_without_transfer_controls(self):
+        manager = User.objects.create_user(username="manager", password="password123")
+        applicant = User.objects.create_user(username="applicant", password="password123")
+        roommate = User.objects.create_user(username="roommate", password="password123")
+        self.household_a.manager = manager
+        self.household_a.save()
+        self.household_a.members.add(manager, roommate)
+        HouseholdJoinRequest.objects.create(household=self.household_a, user=applicant)
+
+        self.client.login(username="manager", password="password123")
+        response = self.client.get(reverse("project_message_list"))
+
+        self.assertContains(response, "Join Requests")
+        self.assertContains(response, "applicant")
+        self.assertContains(response, "Approve")
+        self.assertNotContains(response, "Transfer Manager")
+        self.assertNotContains(response, "New Manager")
+
+    def test_empty_join_requests_do_not_appear_on_messages_page(self):
+        manager = User.objects.create_user(username="manager", password="password123")
+        self.household_a.manager = manager
+        self.household_a.save()
+        self.household_a.members.add(manager)
+
+        self.client.login(username="manager", password="password123")
+        response = self.client.get(reverse("project_message_list"))
+
+        self.assertNotContains(response, "Join Requests")
+        self.assertNotContains(response, "No pending join requests.")
 
 
 class HomeAndHouseholdStatusTests(TestCase):
@@ -594,3 +656,45 @@ class HomeAndHouseholdStatusTests(TestCase):
 
         self.assertRedirects(response, reverse("project_home"))
         self.assertFalse(self.household.members.filter(pk=self.user.pk).exists())
+
+    def test_manager_cannot_leave_before_transferring_manager(self):
+        self.household.manager = self.user
+        self.household.save()
+
+        self.client.login(username="alice", password="password123")
+        response = self.client.post(reverse("project_leave_household"))
+
+        self.assertRedirects(response, self.household.get_absolute_url())
+        self.assertTrue(self.household.members.filter(pk=self.user.pk).exists())
+        self.household.refresh_from_db()
+        self.assertEqual(self.household.manager, self.user)
+
+    def test_manager_can_leave_after_transferring_manager(self):
+        roommate = User.objects.create_user(username="roommate", password="password123")
+        self.household.members.add(roommate)
+        self.household.manager = roommate
+        self.household.save()
+
+        self.client.login(username="alice", password="password123")
+        response = self.client.post(reverse("project_leave_household"))
+
+        self.assertRedirects(response, reverse("project_home"))
+        self.assertFalse(self.household.members.filter(pk=self.user.pk).exists())
+        self.household.refresh_from_db()
+        self.assertEqual(self.household.manager, roommate)
+
+    def test_household_creator_becomes_manager(self):
+        self.client.login(username="alice", password="password123")
+        response = self.client.post(
+            reverse("project_household_create"),
+            {
+                "name": "Managed Home",
+                "address": "3 Manager St",
+                "move_in_date": "2026-03-01",
+            },
+        )
+
+        household = Household.objects.get(name="Managed Home")
+        self.assertRedirects(response, household.get_absolute_url())
+        self.assertEqual(household.manager, self.user)
+        self.assertTrue(household.members.filter(pk=self.user.pk).exists())

@@ -25,7 +25,7 @@
     <form method="post">
         {% csrf_token %}
         <input type="hidden" name="household_id" value="{{ household.pk }}">
-        <button type="submit">Join</button>
+        <button type="submit">Request to Join</button>
     </form>
 </div>
 {% empty %}
