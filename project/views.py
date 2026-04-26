@@ -42,6 +42,16 @@ def cleanup_completed_records():
     Chore.objects.filter(status="completed", completed_at__lte=cutoff).delete()
 
 
+class ProjectLoginRequiredMixin(LoginRequiredMixin):
+    """Send anonymous users to the correct project login URL."""
+
+    def get_login_url(self):
+        """Return the deployment-aware project login URL."""
+        if self.request.path.startswith("/laoba/"):
+            return "/laoba/project/login/"
+        return reverse("project_login")
+
+
 class ProjectHomeView(TemplateView):
     """Display the project dashboard."""
 
@@ -83,7 +93,7 @@ class ProjectLogoutView(LogoutView):
     next_page = reverse_lazy("project_home")
 
 
-class HouseholdDetailView(LoginRequiredMixin, DetailView):
+class HouseholdDetailView(ProjectLoginRequiredMixin, DetailView):
     """Display one household."""
 
     model = Household
@@ -99,7 +109,7 @@ class HouseholdDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class ExpenseListView(LoginRequiredMixin, ListView):
+class ExpenseListView(ProjectLoginRequiredMixin, ListView):
     """Display expenses for the user's current household."""
 
     model = Expense
@@ -115,7 +125,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
         return Expense.objects.filter(household=household).annotate(share_count=Count("shares"))
 
 
-class ExpenseDetailView(LoginRequiredMixin, DetailView):
+class ExpenseDetailView(ProjectLoginRequiredMixin, DetailView):
     """Display one expense in the user's current household."""
 
     model = Expense
@@ -143,7 +153,7 @@ class ExpenseDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class ChoreListView(LoginRequiredMixin, ListView):
+class ChoreListView(ProjectLoginRequiredMixin, ListView):
     """Display chores for the user's current household."""
 
     model = Chore
@@ -159,7 +169,7 @@ class ChoreListView(LoginRequiredMixin, ListView):
         return Chore.objects.filter(household=household)
 
 
-class ChoreDetailView(LoginRequiredMixin, DetailView):
+class ChoreDetailView(ProjectLoginRequiredMixin, DetailView):
     """Display one chore in the user's current household."""
 
     model = Chore
@@ -179,7 +189,7 @@ class ChoreDetailView(LoginRequiredMixin, DetailView):
         return Chore.objects.filter(household=household)
 
 
-class ExpenseShareDetailView(LoginRequiredMixin, DetailView):
+class ExpenseShareDetailView(ProjectLoginRequiredMixin, DetailView):
     """Display one expense share owed by the current user."""
 
     model = ExpenseShare
@@ -193,7 +203,7 @@ class ExpenseShareDetailView(LoginRequiredMixin, DetailView):
         return ExpenseShare.objects.none()
 
 
-class MarkExpenseSharePaidView(LoginRequiredMixin, View):
+class MarkExpenseSharePaidView(ProjectLoginRequiredMixin, View):
     """Mark an expense share as paid."""
 
     def post(self, request, pk):
@@ -208,7 +218,7 @@ class MarkExpenseSharePaidView(LoginRequiredMixin, View):
         return redirect("project_expense_share_detail", pk=share.pk)
 
 
-class MyExpenseShareListView(LoginRequiredMixin, ListView):
+class MyExpenseShareListView(ProjectLoginRequiredMixin, ListView):
     """Display expense shares owed by the current user."""
 
     model = ExpenseShare
@@ -232,7 +242,7 @@ class MyExpenseShareListView(LoginRequiredMixin, ListView):
         return context
 
 
-class WhoOwesMeListView(LoginRequiredMixin, ListView):
+class WhoOwesMeListView(ProjectLoginRequiredMixin, ListView):
     """Display unpaid expense shares owed to the current user."""
 
     model = ExpenseShare
@@ -259,7 +269,7 @@ class WhoOwesMeListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ExpenseShareCreateView(LoginRequiredMixin, View):
+class ExpenseShareCreateView(ProjectLoginRequiredMixin, View):
     """Create an expense share for an expense in the user's current household."""
 
     def post(self, request, pk):
@@ -313,7 +323,7 @@ class RegisterUserView(CreateView):
         return redirect("project_home")
 
 
-class HouseholdCreateView(LoginRequiredMixin, CreateView):
+class HouseholdCreateView(ProjectLoginRequiredMixin, CreateView):
     """Create a household and add the current user to it."""
 
     model = Household
@@ -336,7 +346,7 @@ class HouseholdCreateView(LoginRequiredMixin, CreateView):
         return response
 
 
-class JoinHouseholdView(LoginRequiredMixin, TemplateView):
+class JoinHouseholdView(ProjectLoginRequiredMixin, TemplateView):
     """Search for and join a household."""
 
     template_name = "project/join_household.html"
@@ -367,7 +377,7 @@ class JoinHouseholdView(LoginRequiredMixin, TemplateView):
         return redirect("project_home")
 
 
-class ApproveHouseholdJoinRequestView(LoginRequiredMixin, View):
+class ApproveHouseholdJoinRequestView(ProjectLoginRequiredMixin, View):
     """Approve a request to join a household managed by the current user."""
 
     def post(self, request, pk):
@@ -381,7 +391,7 @@ class ApproveHouseholdJoinRequestView(LoginRequiredMixin, View):
         return redirect("project_household_detail", pk=household_pk)
 
 
-class TransferHouseholdManagerView(LoginRequiredMixin, View):
+class TransferHouseholdManagerView(ProjectLoginRequiredMixin, View):
     """Transfer household manager permissions to another member."""
 
     def post(self, request, pk):
@@ -393,7 +403,7 @@ class TransferHouseholdManagerView(LoginRequiredMixin, View):
         return redirect("project_household_detail", pk=household.pk)
 
 
-class LeaveHouseholdView(LoginRequiredMixin, View):
+class LeaveHouseholdView(ProjectLoginRequiredMixin, View):
     """Remove the current user from their current household."""
 
     def post(self, request, *args, **kwargs):
@@ -408,7 +418,7 @@ class LeaveHouseholdView(LoginRequiredMixin, View):
         return redirect("project_home")
 
 
-class ExpenseCreateView(LoginRequiredMixin, CreateView):
+class ExpenseCreateView(ProjectLoginRequiredMixin, CreateView):
     """Create an expense and split it among selected household members."""
 
     model = Expense
@@ -463,7 +473,7 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
             )
 
 
-class ChoreCreateView(LoginRequiredMixin, CreateView):
+class ChoreCreateView(ProjectLoginRequiredMixin, CreateView):
     """Create a chore for the current household."""
 
     model = Chore
@@ -484,7 +494,7 @@ class ChoreCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
-class MarkChoreCompletedView(LoginRequiredMixin, View):
+class MarkChoreCompletedView(ProjectLoginRequiredMixin, View):
     """Mark a chore as completed."""
 
     def post(self, request, pk):
@@ -496,7 +506,7 @@ class MarkChoreCompletedView(LoginRequiredMixin, View):
         return redirect(chore.get_absolute_url())
 
 
-class MessageListView(LoginRequiredMixin, ListView):
+class MessageListView(ProjectLoginRequiredMixin, ListView):
     """Display messages for the user's current household."""
 
     model = Message
@@ -525,7 +535,7 @@ class MessageListView(LoginRequiredMixin, ListView):
         return context
 
 
-class MessageCreateView(LoginRequiredMixin, CreateView):
+class MessageCreateView(ProjectLoginRequiredMixin, CreateView):
     """Create a message for the user's current household."""
 
     model = Message
@@ -552,7 +562,7 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class MessageDetailView(LoginRequiredMixin, DetailView):
+class MessageDetailView(ProjectLoginRequiredMixin, DetailView):
     """Display one household message and its comments."""
 
     model = Message
@@ -573,7 +583,7 @@ class MessageDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class MessageCommentCreateView(LoginRequiredMixin, View):
+class MessageCommentCreateView(ProjectLoginRequiredMixin, View):
     """Create a comment on a household message."""
 
     def post(self, request, pk):
