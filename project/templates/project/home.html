@@ -1,0 +1,40 @@
+<!--
+    File: home.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: Display the Roommate Manager dashboard.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>Shared Apartment Dashboard</h2>
+<p>This app tracks households, roommates, shared expenses, expense splits, and chores.</p>
+{% if user.is_authenticated %}
+<p>You are currently logged in as <strong>{{ user.username }}</strong>.</p>
+{% else %}
+<p>You are not logged in right now. Use the Login link above to access protected actions.</p>
+{% endif %}
+
+<div class="stats">
+    <div class="card">
+        <h3>{{ expense_count }}</h3>
+        <p>Expenses</p>
+    </div>
+    <div class="card">
+        <h3>{{ chore_count }}</h3>
+        <p>Chores</p>
+    </div>
+    <div class="card">
+        <h3>{{ message_count }}</h3>
+        <p>Messages</p>
+    </div>
+</div>
+
+<p>
+    <a class="button" href="{% url 'project_household_create' %}">Create Household</a>
+    <a class="button" href="{% url 'project_expense_create' %}">Record Expense</a>
+    <a class="button" href="{% url 'project_my_expense_shares' %}">See What I Owe</a>
+    <a class="button" href="{% url 'project_who_owes_me' %}">See Who Owes Me</a>
+    <a class="button" href="{% url 'project_chore_create' %}">Assign Chore</a>
+    <a class="button" href="{% url 'project_message_list' %}">Read Messages</a>
+</p>
+{% endblock %}

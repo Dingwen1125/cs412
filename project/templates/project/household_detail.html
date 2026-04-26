@@ -1,0 +1,39 @@
+<!--
+    File: household_detail.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: Display household members, expenses, and chores.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>{{ household.name }}</h2>
+<p><strong>Address:</strong> {{ household.address }}</p>
+<p><strong>Move-in Date:</strong> {{ household.move_in_date }}</p>
+
+<h3>Members</h3>
+<ul>
+    {% for member in household.members.all %}
+    <li>{{ member.username }}</li>
+    {% empty %}
+    <li>No members yet.</li>
+    {% endfor %}
+</ul>
+
+<h3>Expenses</h3>
+<ul>
+    {% for expense in household.expenses.all %}
+    <li><a href="{{ expense.get_absolute_url }}">{{ expense.title }}</a> - ${{ expense.amount }}</li>
+    {% empty %}
+    <li>No expenses recorded.</li>
+    {% endfor %}
+</ul>
+
+<h3>Chores</h3>
+<ul>
+    {% for chore in household.chores.all %}
+    <li><a href="{{ chore.get_absolute_url }}">{{ chore.title }}</a> - {{ chore.get_status_display }}</li>
+    {% empty %}
+    <li>No chores assigned.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

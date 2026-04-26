@@ -1,0 +1,22 @@
+<!--
+    File: chore_detail.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: Display the details of one household chore.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>{{ chore.title }}</h2>
+<p><strong>Household:</strong> <a href="{{ chore.household.get_absolute_url }}">{{ chore.household }}</a></p>
+<p><strong>Assigned To:</strong> {{ chore.assigned_to.username }}</p>
+<p><strong>Due Date:</strong> {{ chore.due_date }}</p>
+<p><strong>Status:</strong> {{ chore.get_status_display }}</p>
+<p><strong>Description:</strong> {{ chore.description|default:"No description provided." }}</p>
+
+{% if user.is_authenticated and user == chore.assigned_to and chore.status != 'completed' %}
+<form method="post" action="{% url 'project_chore_complete' chore.pk %}">
+    {% csrf_token %}
+    <button type="submit">Mark Completed</button>
+</form>
+{% endif %}
+{% endblock %}

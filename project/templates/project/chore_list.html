@@ -1,0 +1,33 @@
+<!--
+    File: chore_list.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: List chores for the user's current household.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>All Chores</h2>
+<p><a class="button" href="{% url 'project_chore_create' %}">Assign Chore</a></p>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Household</th>
+        <th>Assigned To</th>
+        <th>Due Date</th>
+        <th>Status</th>
+    </tr>
+    {% for chore in chores %}
+    <tr>
+        <td><a href="{{ chore.get_absolute_url }}">{{ chore.title }}</a></td>
+        <td>{{ chore.household }}</td>
+        <td>{{ chore.assigned_to.username }}</td>
+        <td>{{ chore.due_date }}</td>
+        <td>{{ chore.get_status_display }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">No chores yet.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

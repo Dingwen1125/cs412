@@ -69,7 +69,7 @@ class APILoginView(APIView):
         profile = Profile.objects.filter(user=user).order_by("pk").first()
         if profile is None:
             return Response(
-                {"error": "This account does not have a MiniInsta profile."},
+                {"error": "This account does not exist."},
                 status=HTTP_400_BAD_REQUEST,
             )
         return Response(

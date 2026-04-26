@@ -1,0 +1,47 @@
+<!--
+    File: my_expense_shares.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: List expense shares owed by the current user.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>What I Owe</h2>
+<p>This page shows only the expense shares assigned to your account.</p>
+<p><strong>Total Unpaid:</strong> ${{ unpaid_total }}</p>
+
+<table>
+    <tr>
+        <th>Expense</th>
+        <th>Household</th>
+        <th>Owed To</th>
+        <th>Amount Owed</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for share in shares %}
+    <tr>
+        <td><a href="{% url 'project_expense_share_detail' share.pk %}">{{ share.expense.title }}</a></td>
+        <td>{{ share.expense.household }}</td>
+        <td>{{ share.expense.created_by.username }}</td>
+        <td>${{ share.amount_owed }}</td>
+        <td>{{ share.get_paid_status_display }}</td>
+        <td>
+            {% if share.paid_status == 'unpaid' %}
+            <form method="post" action="{% url 'project_expense_share_mark_paid' share.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'project_my_expense_shares' %}">
+                <button type="submit">Mark Paid</button>
+            </form>
+            {% else %}
+            Paid
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6">You do not owe anything right now.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

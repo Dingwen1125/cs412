@@ -1,0 +1,31 @@
+<!--
+    File: message_detail.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: Display one household message and its comments.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>{{ message.title }}</h2>
+<p><strong>Household:</strong> {{ message.household }}</p>
+<p><strong>Author:</strong> {{ message.author.username }}</p>
+<p><strong>Posted:</strong> {{ message.created_at }}</p>
+<p>{{ message.body|linebreaksbr }}</p>
+
+<h3>Comments</h3>
+{% for comment in message.comments.all %}
+<div class="card">
+    <p>{{ comment.body|linebreaksbr }}</p>
+    <p><strong>{{ comment.author.username }}</strong> on {{ comment.created_at }}</p>
+</div>
+{% empty %}
+<p>No comments yet.</p>
+{% endfor %}
+
+<h3>Add Comment</h3>
+<form method="post" action="{% url 'project_message_comment_create' message.pk %}">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Post Comment</button>
+</form>
+{% endblock %}

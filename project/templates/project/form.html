@@ -1,0 +1,18 @@
+<!--
+    File: form.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: Reusable form page for project create and update views.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>{{ page_title }}</h2>
+{% if form_note %}
+<p>{{ form_note }}</p>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{{ submit_label }}</button>
+</form>
+{% endblock %}

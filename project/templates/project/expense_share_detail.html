@@ -1,0 +1,24 @@
+<!--
+    File: expense_share_detail.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: Display one expense share owed by the current user.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>Expense Share</h2>
+<p><strong>Expense:</strong> <a href="{{ share.expense.get_absolute_url }}">{{ share.expense.title }}</a></p>
+<p><strong>Household:</strong> {{ share.expense.household }}</p>
+<p><strong>User:</strong> {{ share.user.username }}</p>
+<p><strong>Owed To:</strong> {{ share.expense.created_by.username }}</p>
+<p><strong>Amount Owed:</strong> ${{ share.amount_owed }}</p>
+<p><strong>Paid Status:</strong> {{ share.get_paid_status_display }}</p>
+<p>You owe {{ share.expense.created_by.username }} ${{ share.amount_owed }} for {{ share.expense.title }}.</p>
+{% if share.paid_status == 'unpaid' %}
+<form method="post" action="{% url 'project_expense_share_mark_paid' share.pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{% url 'project_expense_share_detail' share.pk %}">
+    <button type="submit">Mark As Paid</button>
+</form>
+{% endif %}
+{% endblock %}

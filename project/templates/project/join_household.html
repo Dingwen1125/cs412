@@ -1,0 +1,35 @@
+<!--
+    File: join_household.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: Search for a household by name or address and join it.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>{{ page_title }}</h2>
+
+<form method="get">
+    <p>
+        <label for="household-search">Search by household name or address:</label>
+        <input id="household-search" type="text" name="q" value="{{ search_query }}" placeholder="Name or address">
+    </p>
+    <button type="submit">Search</button>
+</form>
+
+{% if search_query %}
+<h3>Search Results</h3>
+{% for household in search_results %}
+<div class="card">
+    <h4>{{ household.name }}</h4>
+    <p>{{ household.address }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="household_id" value="{{ household.pk }}">
+        <button type="submit">Join</button>
+    </form>
+</div>
+{% empty %}
+<p>No households matched your search.</p>
+{% endfor %}
+{% endif %}
+{% endblock %}

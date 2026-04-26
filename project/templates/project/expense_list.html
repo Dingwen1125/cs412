@@ -1,0 +1,37 @@
+<!--
+    File: expense_list.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: List expenses for the user's current household.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>All Expenses</h2>
+<p><a class="button" href="{% url 'project_expense_create' %}">Record Expense</a></p>
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Household</th>
+        <th>Created By</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th>Category</th>
+        <th>Shares</th>
+    </tr>
+    {% for expense in expenses %}
+    <tr>
+        <td><a href="{{ expense.get_absolute_url }}">{{ expense.title }}</a></td>
+        <td>{{ expense.household }}</td>
+        <td>{{ expense.created_by.username }}</td>
+        <td>${{ expense.amount }}</td>
+        <td>{{ expense.expense_date }}</td>
+        <td>{{ expense.category }}</td>
+        <td>{{ expense.share_count }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7">No expenses yet.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

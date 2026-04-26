@@ -1,0 +1,37 @@
+<!--
+    File: message_list.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: List household messages with title, author, and content.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>Household Messages</h2>
+
+{% if household %}
+<p>Messages for <strong>{{ household.name }}</strong>. Only members of this household can see or comment here.</p>
+<p><a class="button" href="{% url 'project_message_create' %}">Post Message</a></p>
+
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Content</th>
+    </tr>
+    {% for message in messages %}
+    <tr>
+        <td><a href="{{ message.get_absolute_url }}">{{ message.title }}</a></td>
+        <td>{{ message.author.username }}</td>
+        <td>{{ message.body|linebreaksbr }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">No messages yet.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>You need to join a household before you can read or post messages.</p>
+<p><a class="button" href="{% url 'project_join_household' %}">Join Household</a></p>
+{% endif %}
+{% endblock %}

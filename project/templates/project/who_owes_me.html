@@ -1,0 +1,31 @@
+<!--
+    File: who_owes_me.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: List unpaid expense shares owed to the current user.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>Who Owes Me</h2>
+<p>This page shows expense shares from bills you created.</p>
+<p><strong>Total Unpaid:</strong> ${{ unpaid_total }}</p>
+
+<table>
+    <tr>
+        <th>Roommate</th>
+        <th>Amount Owed</th>
+        <th>For</th>
+    </tr>
+    {% for share in shares %}
+    <tr>
+        <td>{{ share.user.username }}</td>
+        <td>${{ share.amount_owed }}</td>
+        <td><a href="{{ share.expense.get_absolute_url }}">{{ share.expense.title }}</a></td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">No one owes you anything right now.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

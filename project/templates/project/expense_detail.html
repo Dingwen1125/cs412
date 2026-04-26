@@ -1,0 +1,41 @@
+<!--
+    File: expense_detail.html
+    Author: Dingwen Yang (laoba@bu.edu), 4/26/2026
+    Description: Display expense details and related expense shares.
+-->
+{% extends 'project/base.html' %}
+
+{% block content %}
+<h2>{{ expense.title }}</h2>
+<p><strong>Household:</strong> <a href="{{ expense.household.get_absolute_url }}">{{ expense.household }}</a></p>
+<p><strong>Created By:</strong> {{ expense.created_by.username }}</p>
+<p><strong>Amount:</strong> ${{ expense.amount }}</p>
+<p><strong>Date:</strong> {{ expense.expense_date }}</p>
+<p><strong>Category:</strong> {{ expense.category }}</p>
+<p><strong>Notes:</strong> {{ expense.notes|default:"No notes provided." }}</p>
+<p><strong>Total Shared:</strong> ${{ total_shared }}</p>
+<p><strong>Remaining To Split:</strong> ${{ remaining_amount }}</p>
+
+<h3>What This Means</h3>
+<p>This expense is the full bill. Each expense share below represents one roommate's portion of that bill.</p>
+
+<h3>Expense Shares</h3>
+<table>
+    <tr>
+        <th>Roommate</th>
+        <th>Amount Owed</th>
+        <th>Paid Status</th>
+    </tr>
+    {% for share in expense.shares.all %}
+    <tr>
+        <td><a href="{{ share.get_absolute_url }}">{{ share.user.username }}</a></td>
+        <td>${{ share.amount_owed }}</td>
+        <td>{{ share.get_paid_status_display }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">No shares recorded yet.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
