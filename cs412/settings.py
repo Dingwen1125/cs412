@@ -157,3 +157,5 @@ CS_DEPLOYMENT_HOSTNAME = 'cs-webapps.bu.edu'
 if socket.gethostname() == CS_DEPLOYMENT_HOSTNAME:
     STATIC_URL = '/laoba/static/'
     MEDIA_URL = '/laoba/media/'
+    LOGIN_URL = "/laoba/project/login/"
+    LOGIN_REDIRECT_URL = "/laoba/project/"
