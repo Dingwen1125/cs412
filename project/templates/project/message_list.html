@@ -9,7 +9,7 @@
 <h2>Household Messages</h2>
 
 {% if household %}
-<p>Messages for <strong>{{ household.name }}</strong>. Only members of this household can see or comment here.</p>
+<p>Messages for <strong>{{ household.name }}</strong>.</p>
 <p><a class="button" href="{% url 'project_message_create' %}">Post Message</a></p>
 
 {% if is_manager and pending_join_requests %}

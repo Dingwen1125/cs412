@@ -83,14 +83,6 @@ class ProjectLogoutView(LogoutView):
     next_page = reverse_lazy("project_home")
 
 
-class HouseholdListView(LoginRequiredMixin, ListView):
-    """Display all households."""
-
-    model = Household
-    template_name = "project/household_list.html"
-    context_object_name = "households"
-
-
 class HouseholdDetailView(LoginRequiredMixin, DetailView):
     """Display one household."""
 
